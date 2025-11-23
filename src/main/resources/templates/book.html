@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang ="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zapisy na wizyte</title>
+</head>
+<body>
+
+<h1>Zapis na wizytę</h1>
+
+<p>
+    Wizyta: <span th:text="${appointment.doctor.fullName}"></span>
+    <span th:text="${#temporals.format(appointment.dateTime, 'dd MMMM yyyy, HH:mm')}"></span>
+</p>
+<form th:action="@{'/appointments/' + ${appointment.id} + '/book'}" method="post">
+    <label>Imię:</label>
+    <input type="text" name="firstName" required><br><br>
+
+    <label>Nazwisko:</label>
+    <input type="text" name="lastName" required><br><br>
+
+    <label>Numer telefonu:</label>
+    <input type="text" name="phoneNumber" required><br><br>
+
+    <button type="submit">Potwierdź zapis</button>
+</form>
+
+<p>
+    <a th:href="@{/appointments}">← Powrót</a>
+</p>
+
+</body>
+</html>

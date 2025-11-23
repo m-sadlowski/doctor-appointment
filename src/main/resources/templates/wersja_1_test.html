@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Klinika JAVA</title> <!--nazwa karty przegladarki-->
+</head>
+<body>
+<h1 th:text="${title}">System rejestracji wizyt lekarskich</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Data i godzina</th>
+        <th>Lekarz</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="appt : ${appointments}">
+        <td th:text="${appt.id}">1</td>
+        <td th:text="${#temporals.format(appt.dateTime, 'dd MMMM yyyy, HH:mm')}">
+            22 listopada 2025, 09:00
+        </td>
+        <td th:text="${appt.doctorName}">dr Przyklad</td>
+        <td th:text="${appt.booked} ? 'Zajeta' : 'Wolna'">Wolna</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Klinika JAVA - Strona główna</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 60px;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 30px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            text-decoration: none;
+            border: 1px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #2196F3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Klinika JAVA</h1>
+<p>Wybierz, co chcesz zrobić:</p>
+
+<div class="btn-container">
+    <!-- Przycisk "Zapisz się" -->
+    <a th:href="@{/appointments}" class="btn btn-primary">Zapisz się</a>
+
+    <!-- Przycisk "Zaloguj się" -->
+    <a th:href="@{/login}" class="btn btn-secondary">Zaloguj się</a>
+</div>
+
+</body>
+</html>

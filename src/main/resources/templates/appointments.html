@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Klinika JAVA - Wizyty</title>
+</head>
+<body>
+
+<h1 th:text="${title}">Dostępne wizyty</h1>
+
+<p>
+    <a th:href="@{/}">← Powrót na stronę główną</a>
+</p>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Data i godzina</th>
+        <th>Lekarz</th>
+        <th>Status</th>
+        <th>Akcja</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="appt : ${appointments}">
+        <td th:text="${appt.id}">1</td>
+        <td th:text="${#temporals.format(appt.dateTime, 'dd MMMM yyyy, HH:mm')}">
+            22 listopada 2025, 09:00
+        </td>
+        <td th:text="${appt.doctor.fullName}">dr Przyklad</td>
+        <td th:text="${appt.doctor.specialization}">specjalizacja</td>
+        <td th:text="${appt.booked} ? 'Zajeta' : 'Wolna'">Wolna</td>
+        <td>
+        <span th:if="${appt.booked}"
+              th:text="'Zajęta przez ' + ${appt.patient.fullName}">
+            Zajęta
+        </span>
+            <span th:if="${!appt.booked}">
+        </span>
+        </td>
+
+        <td>
+        <span th:if="${!appt.booked}">
+            <a th:href="@{'/appointments/' + ${appt.id} +'/book'}">Zapisz się</a>
+        </span>
+            <span th:if="${appt.booked}">
+            —
+        </span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
