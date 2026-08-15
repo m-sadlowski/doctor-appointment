@@ -5,15 +5,34 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Encja reprezentująca termin wizyty w przychodni.
+ *
+ * <p>Obiekt jest mapowany przez JPA/Hibernate na tabelę w bazie danych (H2).
+ * Termin wizyty należy do konkretnego lekarza ({@link Doctor}) i może być
+ * zarezerwowany przez pacjenta ({@link Patient}).</p>
+ *
+ */
 @Entity
 public class Appointment {
+    /** Klucz główny rekordu wizyty (generowany automatycznie przez bazę danych). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Lekarz, do którego przypisany jest termin wizyty.
+     *
+     * <p>Relacja wiele-do-jednego: wiele terminów może należeć do jednego lekarza.</p>
+     */
     @ManyToOne(fetch = FetchType.EAGER)
     private Doctor doctor;
 
+    /**
+     * Pacjent przypisany do terminu (jeśli wizyta została zarezerwowana).
+     *
+     * <p>Gdy termin jest wolny, wartość jest {@code null}.</p>
+     */
     @ManyToOne(fetch = FetchType.EAGER)
     private Patient patient;
 

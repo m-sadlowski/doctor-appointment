@@ -3,51 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <title>Klinika JAVA - Wizyty</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1100px; margin: 40px auto; }
+        header { display:flex; justify-content:space-between; align-items:center; gap:16px; }
+        nav { display:flex; gap:12px; align-items:center; }
+        table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f6f6f6; }
+        .pill { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #ccc; font-size:12px; }
+        .pill.free { border-color:#4caf50; }
+        .pill.booked { border-color:#b00020; }
+        a.btn { display:inline-block; padding:8px 12px; border:1px solid #ccc; border-radius:10px; text-decoration:none; }
+        a.btn:hover { background:#f6f6f6; }
+        .muted { color:#666; }
+    </style>
 </head>
 <body>
 
-<h1 th:text="${title}">Dostępne wizyty</h1>
+<header>
+    <div>
+        <h1>Dostępne wizyty</h1>
+        <div class="muted">Wybierz wolny termin i przejdź do rezerwacji</div>
+    </div>
+    <nav>
+        <a th:href="@{/}" class="btn">Strona główna</a>
+        <a th:href="@{/my-appointments}" class="btn">Moje wizyty</a>
+        <a th:href="@{/login}" class="btn">Zaloguj się (admin)</a>
+        <a th:href="@{/admin}" class="btn">Panel admina</a>
+    </nav>
+</header>
+<section style="border:1px solid #ddd; border-radius:10px; padding:12px; margin-top:16px;">
+    <form method="get" action="/appointments" style="display:flex; gap:12px; flex-wrap:wrap; align-items:end;">
 
-<p>
-    <a th:href="@{/}">← Powrót na stronę główną</a>
-</p>
+        <div>
+            <label>Specjalizacja</label><br/>
+            <select name="specialization">
+                <option value="">(wszystkie)</option>
+                <option th:each="s : ${specializations}"
+                        th:value="${s}"
+                        th:text="${s}"
+                        th:selected="${s == selectedSpecialization}">
+                </option>
+            </select>
+        </div>
 
-<table border="1">
+        <div>
+            <label>Lekarz</label><br/>
+            <select name="doctorId">
+                <option value="">(wszyscy)</option>
+                <option th:each="d : ${doctors}"
+                        th:value="${d.id}"
+                        th:text="${d.fullName + ' (' + d.specialization + ')'}"
+                        th:selected="${d.id == selectedDoctorId}">
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit">Filtruj</button>
+            <a href="/appointments" style="margin-left:8px;">Wyczyść</a>
+        </div>
+
+    </form>
+</section>
+<table>
     <thead>
     <tr>
         <th>ID</th>
         <th>Data i godzina</th>
         <th>Lekarz</th>
+        <th>Specjalizacja</th>
         <th>Status</th>
+        <th>Pacjent</th>
         <th>Akcja</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="appt : ${appointments}">
         <td th:text="${appt.id}">1</td>
-        <td th:text="${#temporals.format(appt.dateTime, 'dd MMMM yyyy, HH:mm')}">
-            22 listopada 2025, 09:00
-        </td>
-        <td th:text="${appt.doctor.fullName}">dr Przyklad</td>
-        <td th:text="${appt.doctor.specialization}">specjalizacja</td>
-        <td th:text="${appt.booked} ? 'Zajeta' : 'Wolna'">Wolna</td>
-        <td>
-        <span th:if="${appt.booked}"
-              th:text="'Zajęta przez ' + ${appt.patient.fullName}">
-            Zajęta
-        </span>
-            <span th:if="${!appt.booked}">
-        </span>
-        </td>
+        <td th:text="${#temporals.format(appt.dateTime, 'dd MMMM yyyy, HH:mm')}">01 stycznia 2026, 10:00</td>
+        <td th:text="${appt.doctor.fullName}">dr Example</td>
+        <td th:text="${appt.doctor.specialization}">Kardiolog</td>
 
         <td>
-        <span th:if="${!appt.booked}">
-            <a th:href="@{'/appointments/' + ${appt.id} +'/book'}">Zapisz się</a>
-        </span>
-            <span th:if="${appt.booked}">
-            —
-        </span>
+            <span th:if="${!appt.booked}" class="pill free">Wolna</span>
+            <span th:if="${appt.booked}" class="pill booked">Zajęta</span>
         </td>
+
+        <td th:text="${(appt.booked and appt.patient != null) ? appt.patient.fullName : '—'}">—</td>
+
+        <td>
+            <a th:if="${!appt.booked}"
+               th:href="@{'/appointments/' + ${appt.id} + '/book'}"
+               class="btn">Zarezerwuj</a>
+
+            <span th:if="${appt.booked}" class="muted">Niedostępne</span>
+        </td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(appointments)}">
+        <td colspan="7">Brak terminów</td>
     </tr>
     </tbody>
 </table>

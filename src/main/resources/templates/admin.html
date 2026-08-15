@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Klinika JAVA - Panel admina</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1100px; margin: 40px auto; }
+        header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+        nav { display: flex; gap: 12px; align-items: center; }
+        table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f6f6f6; }
+        .row-actions form { display: inline; }
+        .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid #ccc; font-size: 12px; }
+        .pill.free { border-color: #4caf50; }
+        .pill.booked { border-color: #b00020; }
+        .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; margin-top: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr 200px; gap: 12px; align-items: end; }
+        input, select { width: 100%; padding: 10px; }
+        button { padding: 10px 14px; cursor: pointer; }
+        .muted { color: #666; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>Panel admina</h1>
+        <p th:if="${error}" th:text="${error}" style="color:#b00020; font-weight:600;"></p>
+        <p th:if="${sukces}" th:text="${sukces}" style="color:#2e7d32; font-weight:600;"></p>
+        <div class="muted">Dodawanie i odwoływanie terminów</div>
+    </div>
+    <nav>
+        <a th:href="@{/}">Strona główna</a>
+        <a th:href="@{/appointments}">Widok pacjenta (wizyty)</a>
+        <form method="post" action="/admin/logout">
+            <button type="submit">Wyloguj</button>
+        </form>
+    </nav>
+</header>
+
+<section class="card">
+    <h2>Dodaj termin</h2>
+    <form method="post" action="/admin/appointments" class="grid">
+        <div>
+            <label for="doctorId">Lekarz</label>
+            <select id="doctorId" name="doctorId" required>
+                <option value="" disabled selected>Wybierz lekarza</option>
+                <option th:each="d : ${doctors}" th:value="${d.id}" th:text="${d.fullName + ' (' + d.specialization + ')'}">
+                    Lekarz
+                </option>
+            </select>
+        </div>
+        <div>
+            <label for="dateTime">Data i godzina</label>
+            <input id="dateTime" name="dateTime" type="datetime-local" required />
+        </div>
+        <div>
+            <button type="submit">Dodaj</button>
+        </div>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Terminy</h2>
+    <form method="get" action="/admin" style="margin: 10px 0; display:flex; gap:10px; align-items:end;">
+        <div>
+            <label>Filtr wizyt</label><br/>
+            <select name="status">
+                <option value="all" th:selected="${status == 'all'}">Wszystkie</option>
+                <option value="booked" th:selected="${status == 'booked'}">Tylko zajęte</option>
+                <option value="free" th:selected="${status == 'free'}">Tylko wolne</option>
+            </select>
+        </div>
+        <button type="submit">Pokaż</button>
+    </form>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Data i godzina</th>
+            <th>Lekarz</th>
+            <th>Specjalizacja</th>
+            <th>Status</th>
+            <th>Pacjent</th>
+            <th>Akcje</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="appt : ${appointments}">
+            <td th:text="${appt.id}">1</td>
+            <td th:text="${#temporals.format(appt.dateTime, 'dd MMMM yyyy, HH:mm')}">22 listopada 2025, 09:00</td>
+            <td th:text="${appt.doctor.fullName}">dr Przykład</td>
+            <td th:text="${appt.doctor.specialization}">spec</td>
+            <td>
+                <span th:if="${!appt.booked}" class="pill free">Wolna</span>
+                <span th:if="${appt.booked}" class="pill booked">Zajęta</span>
+            </td>
+            <td th:text="${(appt.booked and appt.patient != null) ? appt.patient.fullName : '—'}">—</td>
+            <td class="row-actions">
+                <form th:action="@{'/admin/appointments/' + ${appt.id} + '/cancel'}" method="post">
+                    <button type="submit" th:text="${appt.booked} ? 'Anuluj wizyte' : 'Usuń termin'">Odwołaj</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(appointments)}">
+            <td colspan="7">Brak terminów</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+<section class="card" id="doctors">
+    <h2>Lekarze</h2>
+
+    <p th:if="${error}" th:text="${error}" style="color:#b00020; font-weight:600;"></p>
+    <p th:if="${sukces}" th:text="${sukces}" style="color:#2e7d32; font-weight:600;"></p>
+
+    <h3>Dodaj lekarza</h3>
+    <form method="post" action="/admin/doctors"
+          style="display:grid; grid-template-columns: 1fr 1fr 1fr 160px; gap:12px; align-items:end;">
+        <div>
+            <label>Imię</label><br/>
+            <input name="firstName" required />
+        </div>
+        <div>
+            <label>Nazwisko</label><br/>
+            <input name="lastName" required />
+        </div>
+        <div>
+            <label>Specjalizacja</label><br/>
+            <input name="specialization" required />
+        </div>
+        <div>
+            <button type="submit">Dodaj</button>
+        </div>
+    </form>
+
+    <h3 style="margin-top:18px;">Lista lekarzy</h3>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Imię i nazwisko</th>
+            <th>Specjalizacja</th>
+            <th>Akcje</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d : ${doctors}">
+            <td th:text="${d.id}">1</td>
+            <td th:text="${d.fullName}">dr Jan Kowalski</td>
+            <td th:text="${d.specialization}">Internista</td>
+            <td>
+                <form th:action="@{'/admin/doctors/' + ${d.id} + '/delete'}" method="post"
+                      onsubmit="return confirm('Usunąć lekarza? ');">
+                    <button type="submit">Usuń</button>
+                </form>
+            </td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(doctors)}">
+            <td colspan="4">Brak lekarzy</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-top:10px; color:#666;">
+        Usunięcie lekarza jest możliwe tylko jeśli nie ma zarezerwowanych wizyt. Wolne terminy zostaną usunięte automatycznie.
+    </p>
+</section>
+</body>
+</html>

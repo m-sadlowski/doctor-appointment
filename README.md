@@ -2,7 +2,7 @@
 
 Aplikacja uruchamia się lokalnie pod adresem:
 
-> http://localhost:8080
+> http://localhost:8081
 
 ---
 
@@ -14,7 +14,7 @@ Aplikacja uruchamia się lokalnie pod adresem:
 
 ---
 
-### 2.2. Uruchomienie z linii komend (bez IDE)
+### 2. Uruchomienie z linii komend (bez IDE)
 
 W katalogu projektu (`clinic-app`):
 
@@ -22,3 +22,10 @@ W katalogu projektu (`clinic-app`):
 
 ```bash
 mvnw.cmd spring-boot:run
+```
+### 3. Wejscie do bazy danych localhost:xxxx/h2-console
+SHOW TABLES; 
+SELECT * FROM DOCTOR;
+SELECT * FROM APPOINTMENT;
+SELECT * FROM PATIENT;
+SHOW COLUMNS FROM APPOINTMENT;
